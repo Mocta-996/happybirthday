@@ -116,10 +116,11 @@
         }
         
         .confetti {
-            position: absolute;
+            position: fixed;
             width: 10px;
             height: 10px;
-            opacity: 0;
+            opacity: 1;
+            z-index: 100;
         }
     </style>
 </head>
@@ -181,47 +182,57 @@
         }
         
         // Función para crear confeti
-        function createConfetti() {
-            const colors = ['#ff3385', '#66ccff', '#ffcc00', '#66ff66', '#ff99cc'];
-            const confettiCount = 200;
-            const container = document.querySelector('body');
-            
-            for (let i = 0; i < confettiCount; i++) {
-                const confetti = document.createElement('div');
-                confetti.classList.add('confetti');
-                
-                const color = colors[Math.floor(Math.random() * colors.length)];
-                confetti.style.backgroundColor = color;
-                
-                confetti.style.left = Math.random() * 100 + 'vw';
-                confetti.style.top = '-10px';
-                
-                confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
-                
-                const size = Math.random() * 10 + 5;
-                confetti.style.width = `${size}px`;
-                confetti.style.height = `${size}px`;
-                
-                container.appendChild(confetti);
-                
-                // Animación del confeti
-                const duration = Math.random() * 3 + 2;
-                const leftOffset = (Math.random() - 0.5) * 300;
-                
-                confetti.animate([
-                    { transform: `translateY(0) translateX(0) rotate(0deg)`, opacity: 1 },
-                    { transform: `translateY(${window.innerHeight}px) translateX(${leftOffset}px) rotate(${Math.random() * 720}deg)`, opacity: 0 }
-                ], {
-                    duration: duration * 1000,
-                    easing: 'cubic-bezier(.37,.74,.66,.99)',
-                    fill: 'forwards'
-                });
-                
-                setTimeout(() => {
-                    confetti.remove();
-                }, duration * 1000);
-            }
-        }
+        // Función para crear confeti
+function createConfetti() {
+    const colors = ['#ff3385', '#66ccff', '#ffcc00', '#66ff66', '#ff99cc'];
+    const confettiCount = 200;
+    const container = document.querySelector('body');
+    const viewportHeight = Math.max(window.innerHeight, document.body.scrollHeight);
+    
+    for (let i = 0; i < confettiCount; i++) {
+        const confetti = document.createElement('div');
+        confetti.classList.add('confetti');
+        
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.backgroundColor = color;
+        
+        // Distribución inicial del confeti por toda la página
+        confetti.style.left = Math.random() * 100 + 'vw';
+        
+        // Algunos confetis empiezan desde arriba, otros desde la mitad
+        const startPosition = Math.random() > 0.5 ? '-10px' : (viewportHeight / 2) + 'px';
+        confetti.style.top = startPosition;
+        
+        confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+        
+        const size = Math.random() * 10 + 5;
+        confetti.style.width = `${size}px`;
+        confetti.style.height = `${size}px`;
+        
+        // Importante: establecer la posición como fixed para que se mantenga en la vista
+        confetti.style.position = 'fixed';
+        confetti.style.zIndex = '100';
+        
+        container.appendChild(confetti);
+        
+        // Animación del confeti
+        const duration = Math.random() * 3 + 2;
+        const leftOffset = (Math.random() - 0.5) * 300;
+        
+        confetti.animate([
+            { transform: `translateY(0) translateX(0) rotate(0deg)`, opacity: 1 },
+            { transform: `translateY(${window.innerHeight}px) translateX(${leftOffset}px) rotate(${Math.random() * 720}deg)`, opacity: 0 }
+        ], {
+            duration: duration * 1000,
+            easing: 'cubic-bezier(.37,.74,.66,.99)',
+            fill: 'forwards'
+        });
+        
+        setTimeout(() => {
+            confetti.remove();
+        }, duration * 1000);
+    }
+}
         
         // Evento para el botón de sorpresa
         document.getElementById('surpriseBtn').addEventListener('click', function() {
